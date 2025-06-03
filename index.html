@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>IA GANA X10 - Plataforma Integral</title>
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    nav button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background: gold;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .dorado { color: gold; }
+    #tablaOperaciones, #simuladorHUT, #moduloGanancia {
+      display: none;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      background-color: #1a1a1a;
+      font-size: 9px;
+    }
+    th, td {
+      border: 1px solid #555;
+      padding: 3px;
+      text-align: center;
+    }
+    th {
+      background-color: #333;
+      color: gold;
+    }
+    iframe {
+      margin-top: 20px;
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    #claveAccesoDiv {
+      margin: 20px auto;
+      text-align: center;
+    }
+    #claveAccesoDiv input, #idUsuario {
+      padding: 8px;
+      font-size: 14px;
+    }
+    #claveAccesoDiv button, #confirmarID, #botonGanancia {
+      padding: 8px 12px;
+      margin-left: 10px;
+      background: gold;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #graficoGanancias {
+      width: 100%;
+      height: 500px;
+    }
+    #resumenRendimiento {
+      background: #111;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .online-status {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background-color: lime;
+      border-radius: 50%;
+      animation: blink 1s infinite;
+      margin-right: 5px;
+    }
+    #moduloGanancia {
+      margin-top: 30px;
+      text-align: center;
+      padding: 20px;
+      background-color: #222;
+      border-radius: 10px;
+    }
+    @keyframes blink {
+      50% { opacity: 0.2; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <button onclick="mostrarSeccion('claveAccesoDiv')">Cliente HUT</button>
+    </nav>
+
+    <div id="claveAccesoDiv">
+      <h3 class="dorado">Acceso al Módulo HUT</h3>
+      <input type="password" id="clave" placeholder="Ingrese su clave">
+      <button onclick="verificarClave()">Acceder</button>
+    </div>
+
+    <div id="simuladorHUT">
+      <h3 class="dorado">Simulador de Rendimiento</h3>
+      <div id="graficoGanancias"></div>
+      <div id="resumenRendimiento"></div>
+      <button id="botonGanancia" onclick="mostrarSeccion('moduloGanancia')">Obtener Ganancias</button>
+
+      <h3 class="dorado">Distribución del Portafolio</h3>
+      <div id="graficoPie" style="width:100%;max-width:600px;height:400px;margin:auto;"></div>
+
+      <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_1&amp;symbol=BINANCE:BTCUSDT&amp;interval=1D&amp;hidesidetoolbar=1&amp;saveimage=1&amp;toolbarbg=f1f3f6&amp;studies=[]&amp;theme=dark&amp;style=1&amp;timezone=America%2FBogota" allowfullscreen></iframe>
+
+      <h3 class="dorado">Historial de Operaciones (últimos registros)</h3>
+      <table>
+        <thead>
+          <tr><th>Fecha</th><th>Activo</th><th>Tipo</th><th>Ganancia (USD)</th></tr>
+        </thead>
+        <tbody id="cuerpoTabla"></tbody>
+      </table>
+      <div style="text-align:center; margin-top:10px;">
+        <button onclick="paginaAnterior()">Anterior</button>
+        <span id="paginaActual"></span>
+        <button onclick="paginaSiguiente()">Siguiente</button>
+      </div>
+    </div>
+
+    <div id="moduloGanancia">
+      <h3 class="dorado">Verificación de Contrato</h3>
+      <p>Ingrese su cédula o ID de usuario:</p>
+      <input type="text" id="idUsuario" placeholder="Ej: 12345678">
+      <button id="confirmarID" onclick="verificarID()">Confirmar</button>
+      <p id="mensajeID" style="margin-top:15px;color:orangered;"></p>
+    </div>
+  </div>
+
+  <script>
+    function mostrarSeccion(id) {
+      document.getElementById("claveAccesoDiv").style.display = "none";
+      document.getElementById("simuladorHUT").style.display = "none";
+      document.getElementById("moduloGanancia").style.display = "none";
+      document.getElementById(id).style.display = "block";
+    }
+
+    function verificarClave() {
+      const clave = document.getElementById("clave").value;
+      const clavesValidas = ["IA GANA X10", "123456", "202506", "111111", "987654", "258369"];
+      if (clavesValidas.includes(clave)) {
+        mostrarSeccion('simuladorHUT');
+      } else {
+        const mensaje = document.createElement('div');
+        mensaje.style.color = 'red';
+        mensaje.style.marginTop = '10px';
+        mensaje.innerText = '⚠️ Clave incorrecta. Verifique e intente de nuevo.';
+        document.getElementById("claveAccesoDiv").appendChild(mensaje);
+        setTimeout(() => mensaje.remove(), 4000);
+      }
+    }
+
+    function verificarID() {
+      const id = document.getElementById("idUsuario").value.trim();
+      const mensaje = document.getElementById("mensajeID");
+      if (!id) {
+        mensaje.textContent = "⚠️ Por favor ingrese un ID válido.";
+      } else {
+        mensaje.textContent = "❌ Su ID no está activado o sus contratos no han cumplido ciclo de trabajo.";
+      }
+    }
+
+    const operaciones = [];
+    let pagina = 1;
+    const porPagina = 20;
+
+    function generarOperaciones() {
+      const activos = ['BTC', 'EUR/USD', 'Oro', 'S&P500'];
+      const distribucion = { 'BTC': 0, 'EUR/USD': 0, 'Oro': 0, 'S&P500': 0 };
+      const fechaInicio = new Date('2025-05-15');
+      const hoy = new Date();
+      let acumulado = 7500;
+      const diasTotales = Math.floor((hoy - fechaInicio) / (1000 * 60 * 60 * 24)) + 1;
+      const incrementoDiario = Math.pow(3.15, 1 / diasTotales) * 1.001;
+      let fechas = [], saldo = [];
+
+      let dia = new Date(fechaInicio.getTime());
+      while (dia <= hoy) {
+        let gananciaTotalDia = 0;
+        const acumuladoPrevio = acumulado;
+        const acumuladoEsperado = acumuladoPrevio * incrementoDiario;
+        const diferencia = acumuladoEsperado - acumuladoPrevio;
+
+        for (let i = 0; i < 50; i++) {
+          const activo = activos[Math.floor(Math.random() * activos.length)];
+          distribucion[activo]++;
+          const tipo = Math.random() > 0.5 ? 'Compra' : 'Venta';
+          const ganancia = +(Math.random() * (diferencia / 50)).toFixed(2);
+          operaciones.push({ fecha: new Date(dia).toLocaleDateString(), activo, tipo, ganancia });
+          gananciaTotalDia += ganancia;
+        }
+
+        acumulado += gananciaTotalDia;
+        fechas.push(new Date(dia).toLocaleDateString());
+        saldo.push(+acumulado.toFixed(2));
+        dia.setDate(dia.getDate() + 1);
+      }
+
+      Plotly.newPlot('graficoGanancias', [{
+        x: fechas,
+        y: saldo,
+        type: 'scatter',
+        mode: 'lines',
+        name: 'Balance Diario',
+        line: { color: 'gold', shape: 'spline', smoothing: 1.5 }
+      }], {
+        title: 'Crecimiento del Balance desde 15/05/2025',
+        paper_bgcolor: '#1a1a1a',
+        plot_bgcolor: '#1a1a1a',
+        font: { color: '#fff' }
+      });
+
+      document.getElementById("resumenRendimiento").innerHTML = `
+        <div><span class="online-status"></span><strong>Estado:</strong> Online</div>
+        <div><strong>Balance Inicial:</strong> $7,500.00</div>
+        <div><strong>Balance Actual:</strong> $${saldo[saldo.length - 1]}</div>
+        <div><strong>Días transcurridos:</strong> ${diasTotales} días</div>
+        <div><strong>Rentabilidad actual:</strong> ${(saldo[saldo.length - 1] / 7500 * 100 - 100).toFixed(2)}%</div>
+        <div><strong>Meta esperada:</strong> $${(7500 * 3.15).toFixed(2)} al 215%</div>
+      `;
+
+      const totalOps = Object.values(distribucion).reduce((a, b) => a + b, 0);
+      const pieData = Object.keys(distribucion).map(activo => ({
+        label: activo,
+        value: ((distribucion[activo] / totalOps) * 100).toFixed(1)
+      }));
+
+      Plotly.newPlot('graficoPie', [{
+        labels: pieData.map(x => x.label),
+        values: pieData.map(x => x.value),
+        type: 'pie',
+        textinfo: 'label+percent',
+        marker: { colors: ['#FFD700', '#00CED1', '#FF6347', '#32CD32'] }
+      }], {
+        paper_bgcolor: '#1a1a1a',
+        font: { color: '#fff' },
+        title: 'Porcentaje de Operaciones por Activo'
+      });
+
+      mostrarPagina();
+    }
+
+    function mostrarPagina() {
+      const tbody = document.getElementById("cuerpoTabla");
+      tbody.innerHTML = "";
+      const inicio = (pagina - 1) * porPagina;
+      const fin = inicio + porPagina;
+      operaciones.slice(inicio, fin).forEach(op => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${op.fecha}</td><td>${op.activo}</td><td>${op.tipo}</td><td>$${op.ganancia}</td>`;
+        tbody.appendChild(tr);
+      });
+      document.getElementById("paginaActual").textContent = `Página ${pagina} de ${Math.ceil(operaciones.length / porPagina)}`;
+    }
+
+    function paginaAnterior() {
+      if (pagina > 1) {
+        pagina--;
+        mostrarPagina();
+      }
+    }
+
+    function paginaSiguiente() {
+      if (pagina < Math.ceil(operaciones.length / porPagina)) {
+        pagina++;
+        mostrarPagina();
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      generarOperaciones();
+      mostrarSeccion('claveAccesoDiv');
+    });
+  </script>
+</body>
+</html>
