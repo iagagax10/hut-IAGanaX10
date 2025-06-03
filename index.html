@@ -39,7 +39,7 @@
       cursor: pointer;
     }
     .dorado { color: gold; }
-    #tablaOperaciones, #simuladorHUT, #moduloGanancia {
+    #tablaOperaciones, #HUT, #moduloGanancia {
       display: none;
     }
     table {
@@ -126,7 +126,7 @@
     </div>
 
     <div id="simuladorHUT">
-      <h3 class="dorado">Simulador de Rendimiento</h3>
+      <h3 class="dorado">Rendimiento Bimestre</h3>
       <div id="graficoGanancias"></div>
       <div id="resumenRendimiento"></div>
       <button id="botonGanancia" onclick="mostrarSeccion('moduloGanancia')">Obtener Ganancias</button>
@@ -136,7 +136,7 @@
 
       <iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_1&amp;symbol=BINANCE:BTCUSDT&amp;interval=1D&amp;hidesidetoolbar=1&amp;saveimage=1&amp;toolbarbg=f1f3f6&amp;studies=[]&amp;theme=dark&amp;style=1&amp;timezone=America%2FBogota" allowfullscreen></iframe>
 
-      <h3 class="dorado">Historial de Operaciones (últimos registros)</h3>
+      <h3 class="dorado">Historial de Operaciones</h3>
       <table>
         <thead>
           <tr><th>Fecha</th><th>Activo</th><th>Tipo</th><th>Ganancia (USD)</th></tr>
@@ -169,7 +169,7 @@
 
     function verificarClave() {
       const clave = document.getElementById("clave").value;
-      const clavesValidas = ["IA GANA X10", "123456", "202506", "111111", "987654", "258369"];
+      const clavesValidas = ["IAGANAX10", "321987", "202506", "987001", "987654", "258369"];
       if (clavesValidas.includes(clave)) {
         mostrarSeccion('simuladorHUT');
       } else {
